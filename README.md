@@ -4,14 +4,6 @@
 перевірки блукаючих монстрів, нагадування про відпочинок, таймери світла й чарів.
 Працює офлайн і встановлюється на телефон як застосунок.
 
-## Як опублікувати на GitHub Pages (безкоштовно)
-
-1. Увійдіть на github.com → **New repository**. Назва, наприклад, `ose-tracker`, тип **Public**.
-2. На сторінці нового репозиторію натисніть **uploading an existing file**
-   і перетягніть **вміст** цієї папки (index.html, sw.js, manifest.webmanifest, папки fonts та icons) → **Commit changes**.
-3. **Settings → Pages** → Source: **Deploy from a branch** → Branch: `main`, папка `/ (root)` → **Save**.
-4. За 1–2 хвилини застосунок буде за адресою `https://<ваш-логін>.github.io/ose-tracker/`.
-
 ## Як встановити
 
 - **iPhone / iPad:** відкрийте адресу в Safari → «Поділитися» → «На початковий екран».
