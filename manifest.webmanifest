@@ -1,0 +1,19 @@
+{
+  "name": "OSE — трекер ходів підземелля",
+  "short_name": "OSE Ходи",
+  "description": "Трекер ходів підземелля для Old-School Essentials: 10-хвилинні ходи, перевірки блукаючих монстрів, відпочинок і таймери світла.",
+  "lang": "uk",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121317",
+  "theme_color": "#121317",
+  "categories": ["games", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

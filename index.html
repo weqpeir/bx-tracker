@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OSE — трекер ходів</title>
+<meta name="description" content="Трекер ходів підземелля для Old-School Essentials: 10-хвилинні ходи, перевірки блукаючих монстрів, відпочинок і таймери світла.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#121317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#efe8d8" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="OSE Ходи">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<style>
+@font-face{font-family:"Alegreya SC";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/alegreya-sc-cyrillic-500-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Alegreya SC";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/alegreya-sc-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Alegreya SC";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/alegreya-sc-cyrillic-700-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Alegreya SC";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/alegreya-sc-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Alegreya Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/alegreya-sans-cyrillic-400-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Alegreya Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/alegreya-sans-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Alegreya Sans";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/alegreya-sans-cyrillic-500-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Alegreya Sans";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/alegreya-sans-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Alegreya Sans";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/alegreya-sans-cyrillic-700-normal.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Alegreya Sans";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/alegreya-sans-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{
+  --t-torch:#e0913a; --t-lantern:#e8c547; --t-lightC:#7fb2e5; --t-lightMU:#b48ce0; --t-potion:#6cc08b; --t-custom:#e07a9a;
+  --bg:#121317; --panel:#1b1d23; --panel2:#23262e; --line:#3a3e48; --text:#ebe6da; --muted:#a39e92;
+  --accent:#e0913a; --accent-ink:#1a1206; --done:#4a4d55; --done-x:#f3efe4; --rest:#3f7a4c; --danger:#d0463b;
+  --warn:#e0913a; --mark:#ffbf5e; --enc:rgba(208,70,59,.82); --box:clamp(22px, calc((100vw - 114px) / 12), 34px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#efe8d8; --panel:#f8f3e7; --panel2:#ebe3d0; --line:#b9ad94; --text:#2a241a; --muted:#6d6453;
+    --accent:#b5621b; --accent-ink:#fff8ee; --done:#6b665c; --done-x:#fff; --rest:#4f8a5a; --danger:#b3261e; --mark:#ffcf7a; color-scheme:light; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:16px/1.4 "Alegreya Sans",system-ui,sans-serif;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:12px}
+h1,h2,h3,h4{font-family:"Alegreya SC",Georgia,serif;font-weight:700;margin:0;letter-spacing:.02em}
+svg.i{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Header */
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top h1{font-size:22px;line-height:1.1;flex:1 1 auto;min-width:0}
+.top h1 small{display:block;font-family:"Alegreya Sans",sans-serif;font-weight:400;font-size:13px;color:var(--muted);letter-spacing:0}
+.tools{display:flex;gap:6px;align-items:center}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:38px;height:38px;padding:0 9px;border-radius:10px;border:1px solid var(--line);background:var(--panel);cursor:pointer}
+.iconbtn:hover{border-color:var(--accent)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill.ok::before{background:#5fb36f}.pill.ro::before{background:#6c8fd6}.pill.bad::before{background:var(--danger)}.pill.wait::before{background:var(--accent)}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:10px;align-items:stretch}
+.stat{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:6px 10px;border-radius:10px;background:var(--panel2);min-width:0}
+.stat .lbl{font-size:12px;color:var(--muted);line-height:1.15}
+.stat b{font-size:18px;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.stat.big{flex-direction:row;align-items:baseline;gap:6px;padding:6px 14px}
+.stat.big .num{font-family:"Alegreya SC",serif;font-size:40px;line-height:1;color:var(--accent);font-variant-numeric:lining-nums tabular-nums}
+@media (max-width:620px){ .stats{grid-template-columns:1fr 1fr} .stat.big{grid-column:1/-1;justify-content:center} }
+
+/* Controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:42px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;white-space:nowrap;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700;font-size:17px;padding:0 20px}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;pointer-events:none}
+.sep{width:1px;height:26px;background:var(--line)}
+@media (max-width:620px){
+  .controls{display:grid;grid-template-columns:repeat(3,1fr)}
+  .controls .btn.primary{grid-column:1/-1;height:52px}
+  .controls .sep{display:none}
+  .controls .btn{padding:0 8px;font-size:15px}
+}
+
+/* Banner */
+.banner{display:flex;align-items:center;gap:10px;background:var(--danger);color:#fff;border-radius:12px;padding:10px 12px;font-weight:700;animation:pop .25s ease-out}
+.banner span{flex:1}
+.banner button{background:transparent;border:0;color:#fff;cursor:pointer;padding:4px}
+@keyframes pop{from{transform:scale(.97);opacity:0}to{transform:none;opacity:1}}
+
+/* Grid */
+.gridhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.daynav{display:flex;align-items:center;gap:4px}
+.daynav .cur{font-family:"Alegreya SC",serif;font-size:18px;padding:0 8px;cursor:pointer;background:none;border:0}
+.daynav .cur.away{color:var(--accent);text-decoration:underline dotted}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin-bottom:8px}
+.legend b{color:var(--text)}
+.legend .sw{display:inline-block;width:16px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:3px;border:1px solid var(--line)}
+.legend .bar{display:inline-block;width:16px;height:4px;border-radius:2px;vertical-align:2px;margin-right:3px}
+.legend .g{font-weight:700;color:var(--text)}
+.grid{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center}
+.hour{display:flex;flex-direction:column}
+.labels{display:grid;grid-template-columns:repeat(6,var(--box))}
+.labels span{font-size:10px;font-weight:700;text-align:right;padding-right:3px;height:12px;line-height:12px;color:var(--muted)}
+.row{display:flex;align-items:center;gap:3px}
+.boxes{display:grid;grid-template-columns:repeat(6,var(--box));border:1.5px solid var(--text);border-radius:3px;overflow:hidden;background:var(--panel)}
+.hnum{font-size:10px;color:var(--muted);width:18px;font-variant-numeric:lining-nums tabular-nums}
+.box{position:relative;height:var(--box);-webkit-touch-callout:none;border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent}
+.box:last-child{border-right:0}
+.gm .box{cursor:pointer}
+.gm .box:hover{outline:2px solid var(--accent);outline-offset:-2px}
+.box > *{pointer-events:none}
+.box.done{background:var(--done)}
+.box.done::after{content:"\2715";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:calc(var(--box) * .5);color:var(--done-x);opacity:.7;pointer-events:none}
+.box.rested{background:var(--rest)}
+.box.enc{background:var(--enc)}
+.box.next{box-shadow:inset 0 0 0 2px var(--accent)}
+.box.due{box-shadow:inset 0 0 0 2px var(--rest);background-image:repeating-linear-gradient(135deg,transparent 0 4px,rgba(79,138,90,.22) 4px 6px)}
+.box.next.due{box-shadow:inset 0 0 0 2px var(--accent),inset 0 0 0 4px var(--rest)}
+.box .tn{position:absolute;left:2px;top:1px;font-size:8px;line-height:1;color:var(--muted);font-variant-numeric:lining-nums tabular-nums;z-index:1}
+.box.done .tn,.box.rested .tn,.box.enc .tn{color:rgba(255,255,255,.75)}
+.box .ends{position:absolute;right:1px;top:0;font-size:9px;line-height:1.1;font-weight:700;z-index:2;text-shadow:0 0 2px #000,0 0 2px #000;letter-spacing:-.5px}
+.box .chk{position:absolute;left:2px;bottom:3px;font-size:9px;line-height:1;font-weight:700;color:var(--muted);z-index:2}
+.box.done .chk{color:#fff}
+.box .chk.e{color:#fff}
+.box .chk.q{color:var(--accent)}
+.box .miss{position:absolute;right:2px;bottom:3px;font-size:10px;line-height:1;font-weight:700;color:#fff;background:var(--warn);border-radius:2px;padding:0 2px;z-index:2}
+.box .bars{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column-reverse;gap:1px;z-index:1}
+.box .bars i{display:block;height:3px;opacity:.95}
+.box .bars i.s{margin-left:3px;border-top-left-radius:2px;border-bottom-left-radius:2px}
+.box .bars i.e{margin-right:3px;border-top-right-radius:2px;border-bottom-right-radius:2px}
+.tsw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:2px}
+
+/* Encounters */
+.encbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.card.encbar h4{border:0;margin:0;padding:0;font-size:16px;flex:1 1 auto}
+.encbar select{background:var(--panel2);border:1px solid var(--line);border-radius:10px;height:42px;padding:0 10px;min-width:0;flex:1 1 160px;max-width:100%}
+.encd{font-weight:500;font-size:14px;opacity:.95;margin-top:2px}
+.banner .items{flex:1;display:flex;flex-direction:column;gap:6px}
+.banner .encd{font-weight:500}
+.log .encd{color:var(--text);opacity:.85}
+.tbl-help{font-size:13px;color:var(--muted);white-space:pre-line;background:var(--panel2);border-radius:8px;padding:6px 10px}
+.field textarea.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;min-height:180px}
+.sheet h3.sub{font-size:17px;margin:4px 0 8px}
+.btn.danger{color:var(--danger);border-color:var(--danger);background:transparent}
+
+/* Bottom */
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.bottom{grid-template-columns:1fr}}
+.card h4{font-size:16px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+ul.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.timer{display:grid;grid-template-columns:30px 1fr auto 28px;gap:8px;align-items:center;padding:4px 0}
+.timer .mk{font-weight:700;text-align:center;color:var(--accent)}
+.timer.warn{color:var(--warn);font-weight:700}
+.timer .left{font-variant-numeric:lining-nums tabular-nums;color:var(--muted);text-align:right;line-height:1.2}
+.timer .left small{display:block;font-size:12px}
+.timer.warn .left{color:var(--warn)}
+.x{background:none;border:0;cursor:pointer;color:var(--muted);padding:4px;display:inline-flex}
+.x:hover{color:var(--danger)}
+.empty{color:var(--muted);font-style:italic}
+.log{max-height:260px;overflow-y:auto}
+.log li{display:flex;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.log li:last-child{border-bottom:0}
+.log .tn{color:var(--muted);white-space:nowrap;font-variant-numeric:lining-nums tabular-nums;min-width:52px}
+.log .enc{color:var(--danger);font-weight:700}
+.log .die{display:inline-block;min-width:22px;text-align:center;border:1px solid var(--line);border-radius:5px;font-weight:700;margin-right:4px;font-variant-numeric:lining-nums tabular-nums}
+textarea.notes{width:100%;min-height:130px;resize:vertical;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+textarea.notes:read-only{opacity:.85}
+
+/* Compact */
+.compact .hide-compact{display:none!important}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 10px;font-size:14px;white-space:nowrap}
+.chip.warn{color:var(--warn);border-color:var(--warn);font-weight:700}
+.chip .x{padding:2px}
+
+/* Player counter */
+.counter{text-align:center;padding:32px 16px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.counter .num{font-family:"Alegreya SC",serif;font-size:84px;line-height:1;color:var(--accent);font-variant-numeric:lining-nums tabular-nums}
+.counter .sub{font-size:18px;color:var(--muted)}
+.counter .row2{display:flex;gap:22px;font-size:18px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal[hidden]{display:none}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.sheet h3{font-size:20px;margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label,.field .lab{font-weight:500}
+.field .hint{font-size:13px;color:var(--muted)}
+.field input[type=text],.field input[type=number],.field select,.field textarea{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.field.check{flex-direction:row;align-items:flex-start;gap:10px}
+.field.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent)}
+.mBtns{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap}
+.sheet hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.sheet p{margin:0 0 10px}
+
+/* Toasts */
+#toasts{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:60;width:min(440px,calc(100% - 24px));pointer-events:none}
+.toast{white-space:pre-line;background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:9px 12px;box-shadow:0 8px 24px rgba(0,0,0,.35);animation:pop .2s ease-out;font-size:15px}
+.toast.bad{border-left-color:var(--danger)}.toast.good{border-left-color:#5fb36f}
+.kbd{font-size:12px;color:var(--muted);text-align:center}
+.kbd kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font-family:inherit}
+@media (hover:none){.kbd{display:none}}
+.install{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;font-size:15px}
+.install span{flex:1}
+.install .share{display:inline-block;vertical-align:-3px}
+html.standalone body{overscroll-behavior-y:none}
+.touch-only{display:none}
+@media (hover:none){.touch-only{display:inline}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <h1 id="hTitle"></h1>
+    <span class="pill wait" id="status"></span>
+    <div class="tools">
+      <button class="iconbtn" data-action="lang" id="langBtn"></button>
+      <button class="iconbtn" data-action="compact" id="compactBtn"></button>
+      <button class="iconbtn" data-action="settings" id="settingsBtn"></button>
+    </div>
+  </header>
+  <div class="install" id="install" hidden></div>
+  <div id="main"></div>
+  <section class="bottom hide-compact" id="bottom">
+    <div class="card" id="timersCard"><h4 id="hTimers"></h4><ul class="list" id="timers"></ul></div>
+    <div class="card" id="logCard"><h4 id="hLog"></h4><ul class="list log" id="log"></ul></div>
+    <div class="card" id="notesCard" style="grid-column:1/-1"><h4 id="hNotes"></h4><textarea class="notes" id="notes"></textarea></div>
+  </section>
+  <div class="kbd hide-compact" id="kbd"></div>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h3 id="mTitle"></h3>
+    <form id="mForm" autocomplete="off">
+      <div id="mBody"></div>
+      <div class="mBtns"><button type="button" class="btn ghost" id="mCancel"></button><button type="submit" class="btn primary" id="mOk"></button></div>
+    </form>
+  </div>
+</div>
+<div id="toasts"></div>
+
+<script>
+(() => {
+"use strict";
+
+/* ---------------- Constants ---------------- */
+const TURNS_PER_HOUR = 6, HOURS_PER_DAY = 24, TURNS_PER_DAY = 144;
+const PRESETS = {
+  torch:   { duration: "6" },
+  lantern: { duration: "24" },
+  lightC:  { duration: "12" },
+  lightMU: { duration: "7" },
+  potion:  { duration: "1d6+6" },
+  custom:  { duration: "6" }
+};
+const DEF_SETTINGS = { wInt: 2, wChance: 1, autoRoll: true, hideRolls: true, rInt: 6, playerView: "counter",
+  encTables: false, encDistance: false, encSurprise: false, encReaction: false, reactMod: 0 };
+const TABLE_DICE = ["eq", "d4", "d6", "d8", "d10", "d12", "d20", "2d6", "d100"];
+const DOC_PATH = "tracker/state";
+const LS_STATE = "osedtt.state.v1", LS_PREFS = "osedtt.prefs.v1";
+
+/* ---------------- i18n ---------------- */
+function plUk(n, one, few, many) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return many;
+  if (b === 1) return one;
+  if (b > 1 && b < 5) return few;
+  return many;
+}
+const I18N = {
+  uk: {
+    title: "Трекер ходів підземелля",
+    subtitle: "Old-School Essentials · 1 клітинка = 1 хід (10 хв)",
+    advance: "Наступний хід", back: "−1", backTip: "Скасувати один хід (без перевірок)",
+    rest: "Відпочинок", restTip: "Загін відпочиває 1 хід", rested: "Загін відпочивав",
+    timer: "Таймер", addTimer: "Додати таймер", add: "Додати", cancel: "Скасувати", ok: "Гаразд", save: "Зберегти",
+    type: "Тип", label: "Назва", labelHint: "напр. Смолоскип (Борис)",
+    duration: "Тривалість (ходів)", durationHint: "Число або формула кубиків, напр. 1d6+6.",
+    badFormula: "Не вдалося розібрати тривалість. Приклади: 6, 1d6+6, 2d4.",
+    remove: "Прибрати", reset: "Скинути трекер",
+    resetConfirm: "Скинути всі ходи, відпочинки, таймери й журнал? Нотатки залишаться.",
+    jumpConfirm: n => `Просунутися одразу на ${n} ${plUk(n,"хід","ходи","ходів")}? Усі перевірки за ці ходи буде кинуто.`,
+    turns: n => plUk(n, "хід", "ходи", "ходів"),
+    elapsed: "Минуло", turnOfDay: "Хід доби", nextW: "Перевірка монстрів через", day: "День", currentDay: "До поточного дня",
+    activeTimers: "Активні таймери", noTimers: "Немає активних таймерів", left: n => `лишилось ${n}`,
+    notes: "Нотатки ведучого", log: "Журнал подій", noLog: "Поки що порожньо", clearLog: "Очистити",
+    preset: { torch: "Смолоскип", lantern: "Ліхтар", lightC: "Світло (жрець)", lightMU: "Світло (маг)", potion: "Зілля", custom: "Власний" },
+    marker: { torch: "С", lantern: "Л", lightC: "Ч", lightMU: "Ч", potion: "З", custom: "★" },
+    letterW: "Б", letterR: "В",
+    legend: { W: "перевірка блукаючих монстрів", R: "загін має відпочити", T: "згасає смолоскип", L: "згасає ліхтар", S: "закінчуються чари світла" },
+    enc: {
+      title: "Зустрічі", roll: "Кинути зустріч", tables: "Таблиці…", noTable: "— без таблиці —",
+      manual: "Зустріч (кинуто вручну)",
+      m: (c, m, cf) => c != null ? `${c} × ${m}${cf ? ` (${cf})` : ""}` : m,
+      noEntry: (tb, die, r) => `${tb}: ${die} = ${r} — немає запису`,
+      tbRoll: (tb, die, r) => `${tb}, ${die === "eq" ? "№" : die} = ${r}`,
+      dist: (ft, sur) => `відстань ${ft} фт (≈${Math.round(ft * 0.3048)} м)${sur ? ", бо хтось заскочений" : ""}`,
+      surp: (p, m) => `раптовість: загін ${p}${p <= 2 ? " — заскочений" : ""}, монстри ${m}${m <= 2 ? " — заскочені" : ""}`,
+      react: (t, lbl) => `реакція ${t} — ${lbl}`,
+      reactLbl: t => t <= 2 ? "нападають" : t <= 5 ? "ворожі, можуть напасти" : t <= 8 ? "насторожені, вагаються" : t <= 11 ? "байдужі, можна домовитися" : "дружні, охочі до розмови",
+      editTitle: "Таблиці зустрічей", which: "Таблиця", newTable: "+ Нова таблиця", name: "Назва таблиці", namePh: "напр. Рівень 1 — Склепи",
+      die: "Кубик таблиці", dieEq: "Рівні шанси (без діапазонів)",
+      entries: "Записи — по одному на рядок",
+      help: "Формат рядка: [діапазон:] [кількість] назва [| примітка]\n1-4: 2d4 Гобліни | КБ 6, 1 КЗ\n5-7: 1d6 Гігантські щури\n8: 1 Блукаючий привид\nБез діапазонів записи нумеруються по черзі: 1, 2, 3…",
+      del: "Видалити таблицю", delSure: "Точно видалити?", saved: "Таблицю збережено.", empty: "Додайте хоча б один запис.",
+      defName: n => `Таблиця ${n}`
+    },
+    lg: { num: "номер ходу в добі", roll: "кидок d6 (≤ шансу — зустріч)", next: "наступна перевірка", enc: "зустріч", rested: "відпочинок", due: "очікується відпочинок", miss: "відпочинок пропущено", bars: "смуга — скільки діє таймер, літера — коли згасне", hold: "Утримуйте клітинку, щоб побачити деталі." },
+    tip: {
+      day: d => `день ${d}`,
+      check: (r, e) => `Перевірка монстрів: d6 = ${r} — ${e ? "зустріч!" : "нікого"}`,
+      checkHidden: "Перевірку монстрів проведено", checkManual: "Перевірка монстрів (вручну)", checkNext: "Наступна перевірка монстрів",
+      timer: (l, a, b) => `${l}: ходи ${a}–${b}`, ends: "згасає тут", starts: "запалено",
+      restDue: "Тут загін має відпочити (ще не відпочивав цієї години)", restMiss: "Відпочинок пропущено: −1 до атаки й шкоди"
+    },
+    until: (n, d) => `до ходу ${n}${d ? ` (день ${d})` : ""}`,
+    turnShort: n => `Хід ${n}`,
+    wanderingManual: "киньте на блукаючих монстрів.",
+    encounter: "Зустріч!", noEncounter: "Нікого немає.",
+    mustRest: "Загін мусить відпочити 1 хід (−1 до атаки й шкоди, доки не відпочине).",
+    expired: l => `«${l}» — час вийшов.`,
+    added: (l, f, v) => f ? `Додано «${l}»: ${f} = ${v} ${plUk(v,"хід","ходи","ходів")}.` : `Додано «${l}» на ${v} ${plUk(v,"хід","ходи","ходів")}.`,
+    restLog: "Загін відпочив.",
+    hiddenRoll: "Перевірку блукаючих монстрів проведено.",
+    notifyEncounter: t => `Блукаючі монстри! ${t.length > 1 ? "Ходи" : "Хід"} ${t.join(", ")}`,
+    fmt: (d, h, m) => `${d ? d + "д " : ""}${h}год ${m}хв`,
+    compact: "Компактний вигляд", expand: "Повний вигляд", settings: "Налаштування", langName: "EN",
+    st: { local: "Локально", sync: "Синхронізовано", saving: "Збереження…", ro: "Лише перегляд", conn: "Підключення…", off: "Немає з'єднання" },
+    stTip: { local: "Дані зберігаються лише в цьому браузері.", sync: "Спільний стан: усі, хто відкрив сторінку, бачать зміни наживо.", ro: "Ви бачите трекер ведучого наживо, але не можете його змінювати.", conn: "Підключаємося до спільного сховища…", off: "Сховище поки недоступне — зміни можуть бути застарілими." },
+    set: {
+      wInt: ["Перевірка блукаючих монстрів кожні X ходів", "За правилами OSE: кожні 2 ходи."],
+      wChance: ["Шанс зустрічі (X із 6)", "За правилами OSE: 1 із 6."],
+      autoRoll: ["Кидати перевірки автоматично", "Якщо вимкнено — лише нагадування в журналі."],
+      hideRolls: ["Приховувати кидки від гравців", "Гравці бачать лише, що перевірку проведено."],
+      rInt: ["Відпочинок потрібен кожні X ходів", "За правилами OSE: 1 хід відпочинку на 6 ходів (1 годину)."],
+      advTitle: "Розширені зустрічі",
+      advHint: "Усе вимкнено за замовчуванням — увімкніть лише те, що потрібно.",
+      encTables: ["Власні таблиці зустрічей", "При зустрічі кидати по вибраній таблиці: хто і скільки."],
+      encDistance: ["Кидати відстань", "У підземеллі 2d6 × 10 футів (раптовість на неї не впливає)."],
+      encSurprise: ["Кидати раптовість", "По 1d6 за загін і монстрів; 1–2 — заскочені."],
+      encReaction: ["Кидати реакцію монстрів", "2d6 за таблицею реакцій."],
+      reactMod: ["Модифікатор реакції", "Напр. модифікатор Харизми переговорника (від −3 до +3)."],
+      playerView: ["Що бачать гравці", "Ведучий (власник сторінки) завжди має повний контроль. Поділіться сторінкою з гравцями з правом перегляду — і вони бачитимуть трекер наживо."],
+      pv: { off: "Нічого", counter: "Лише лічильник (ходи й час)", full: "Увесь трекер (лише перегляд)" },
+      backup: "Резервна копія", copy: "Скопіювати стан", copied: "Стан скопійовано в буфер обміну.", copyFail: "Не вдалося скопіювати — виділіть текст нижче вручну.",
+      importLbl: "Вставте збережений стан (JSON), щоб відновити його", importBtn: "Відновити", importBad: "Це не схоже на збережений стан трекера.", imported: "Стан відновлено."
+    },
+    offView: "Ведучий не відкрив трекер для гравців.",
+    loading: "Завантаження…",
+    writeDenied: "Немає прав змінювати трекер — увімкнено режим перегляду.",
+    writeFail: "Не вдалося зберегти зміни. Спробуйте ще раз.",
+    quota: "Сховище заповнене — зміни не збережено.",
+    installIos: "Встановіть як застосунок: натисніть «Поділитися» SHARE і виберіть «На початковий екран».",
+    installBtn: "Встановити застосунок", installText: "Працює офлайн, без рядка адреси.",
+    updated: "Застосунок оновлено.",
+    keys: "Клавіші: <kbd>→</kbd> або <kbd>N</kbd> — наступний хід · <kbd>←</kbd> — скасувати · <kbd>R</kbd> — відпочинок"
+  },
+  en: {
+    title: "Dungeon Turn Tracker",
+    subtitle: "Old-School Essentials · 1 box = 1 turn (10 min)",
+    advance: "Next turn", back: "−1", backTip: "Undo one turn (no checks)",
+    rest: "Rest", restTip: "Party rests for 1 turn", rested: "Party rested",
+    timer: "Timer", addTimer: "Add timer", add: "Add", cancel: "Cancel", ok: "OK", save: "Save",
+    type: "Type", label: "Label", labelHint: "e.g. Torch (Bob)",
+    duration: "Duration (turns)", durationHint: "A number or a dice formula, e.g. 1d6+6.",
+    badFormula: "Couldn't read that duration. Examples: 6, 1d6+6, 2d4.",
+    remove: "Remove", reset: "Reset tracker",
+    resetConfirm: "Reset all turns, rests, timers and the log? Notes are kept.",
+    jumpConfirm: n => `Advance ${n} turns at once? All checks for those turns will be rolled.`,
+    turns: n => n === 1 ? "turn" : "turns",
+    elapsed: "Elapsed", turnOfDay: "Turn of day", nextW: "Next wandering check in", day: "Day", currentDay: "Jump to current day",
+    activeTimers: "Active timers", noTimers: "No active timers", left: n => `${n} left`,
+    notes: "Referee's notes", log: "Event log", noLog: "Nothing yet", clearLog: "Clear",
+    preset: { torch: "Torch", lantern: "Lantern", lightC: "Light (C)", lightMU: "Light (MU)", potion: "Potion", custom: "Custom" },
+    marker: { torch: "T", lantern: "L", lightC: "S", lightMU: "S", potion: "P", custom: "★" },
+    letterW: "W", letterR: "R",
+    legend: { W: "Wandering monster check", R: "Party must rest", T: "Torch expires", L: "Lantern expires", S: "Light spell expires" },
+    enc: {
+      title: "Encounters", roll: "Roll encounter", tables: "Tables…", noTable: "— no table —",
+      manual: "Encounter (rolled manually)",
+      m: (c, m, cf) => c != null ? `${c} × ${m}${cf ? ` (${cf})` : ""}` : m,
+      noEntry: (tb, die, r) => `${tb}: ${die} = ${r} — no entry`,
+      tbRoll: (tb, die, r) => `${tb}, ${die === "eq" ? "#" : die} = ${r}`,
+      dist: (ft, sur) => `distance ${ft}′ (≈${Math.round(ft * 0.3048)} m)${sur ? ", someone is surprised" : ""}`,
+      surp: (p, m) => `surprise: party ${p}${p <= 2 ? " — surprised" : ""}, monsters ${m}${m <= 2 ? " — surprised" : ""}`,
+      react: (t, lbl) => `reaction ${t} — ${lbl}`,
+      reactLbl: t => t <= 2 ? "attacks" : t <= 5 ? "hostile, may attack" : t <= 8 ? "uncertain, wary" : t <= 11 ? "indifferent, may negotiate" : "friendly, eager to talk",
+      editTitle: "Encounter tables", which: "Table", newTable: "+ New table", name: "Table name", namePh: "e.g. Level 1 — Crypts",
+      die: "Table die", dieEq: "Equal chances (no ranges)",
+      entries: "Entries — one per line",
+      help: "Line format: [range:] [number] name [| note]\n1-4: 2d4 Goblins | AC 6, HD 1\n5-7: 1d6 Giant rats\n8: 1 Wandering ghost\nWithout ranges, entries are numbered in order: 1, 2, 3…",
+      del: "Delete table", delSure: "Really delete?", saved: "Table saved.", empty: "Add at least one entry.",
+      defName: n => `Table ${n}`
+    },
+    lg: { num: "turn of day", roll: "d6 check (≤ chance = encounter)", next: "next check", enc: "encounter", rested: "rest", due: "rest expected", miss: "rest missed", bars: "bar — how long a timer lasts, letter — when it runs out", hold: "Press and hold a box to see details." },
+    tip: {
+      day: d => `day ${d}`,
+      check: (r, e) => `Wandering check: d6 = ${r} — ${e ? "encounter!" : "nothing"}`,
+      checkHidden: "Wandering check made", checkManual: "Wandering check (manual)", checkNext: "Next wandering check",
+      timer: (l, a, b) => `${l}: turns ${a}–${b}`, ends: "runs out here", starts: "lit",
+      restDue: "Party must rest here (hasn't rested this hour yet)", restMiss: "Rest missed: −1 to attack and damage"
+    },
+    until: (n, d) => `until turn ${n}${d ? ` (day ${d})` : ""}`,
+    turnShort: n => `Turn ${n}`,
+    wanderingManual: "roll for wandering monsters.",
+    encounter: "Encounter!", noEncounter: "Nothing comes.",
+    mustRest: "The party must rest for 1 turn (−1 to attack and damage until they do).",
+    expired: l => `“${l}” has expired.`,
+    added: (l, f, v) => f ? `Added “${l}”: ${f} = ${v} turns.` : `Added “${l}” for ${v} ${v === 1 ? "turn" : "turns"}.`,
+    restLog: "The party rested.",
+    hiddenRoll: "Wandering monster check made.",
+    notifyEncounter: t => `Wandering monsters! Turn${t.length > 1 ? "s" : ""} ${t.join(", ")}`,
+    fmt: (d, h, m) => `${d ? d + "d " : ""}${h}h ${m}min`,
+    compact: "Compact view", expand: "Full view", settings: "Settings", langName: "УК",
+    st: { local: "Local", sync: "Synced", saving: "Saving…", ro: "View only", conn: "Connecting…", off: "Offline" },
+    stTip: { local: "Data is kept in this browser only.", sync: "Shared state: everyone with this page open sees changes live.", ro: "You're watching the referee's tracker live but can't change it.", conn: "Connecting to shared storage…", off: "Storage unreachable — data may be out of date." },
+    set: {
+      wInt: ["Wandering monster check every X turns", "OSE default: every 2 turns."],
+      wChance: ["Encounter chance (X-in-6)", "OSE default: 1-in-6."],
+      autoRoll: ["Roll wandering checks automatically", "If off, only a reminder is logged."],
+      hideRolls: ["Hide rolls from players", "Players only see that a check was made."],
+      rInt: ["Rest required every X turns", "OSE default: 1 turn of rest per 6 turns (1 hour)."],
+      advTitle: "Advanced encounters",
+      advHint: "All off by default — turn on only what you need.",
+      encTables: ["Custom encounter tables", "On an encounter, roll on the selected table: who and how many."],
+      encDistance: ["Roll distance", "In the dungeon, 2d6 × 10 feet (surprise doesn't change it)."],
+      encSurprise: ["Roll surprise", "1d6 for the party and for the monsters; 1–2 means surprised."],
+      encReaction: ["Roll monster reaction", "2d6 on the reaction table."],
+      reactMod: ["Reaction modifier", "E.g. the negotiator's Charisma modifier (−3 to +3)."],
+      playerView: ["What players can see", "The referee (page owner) always has full control. Share this page with players as viewers and they'll see the tracker live."],
+      pv: { off: "Nothing", counter: "Only the counter (turns and elapsed time)", full: "Whole tracker (read-only)" },
+      backup: "Backup", copy: "Copy state", copied: "State copied to clipboard.", copyFail: "Couldn't copy — select the text below manually.",
+      importLbl: "Paste a saved state (JSON) to restore it", importBtn: "Restore", importBad: "That doesn't look like a saved tracker state.", imported: "State restored."
+    },
+    offView: "The referee hasn't shared the tracker with players.",
+    loading: "Loading…",
+    writeDenied: "You can't change this tracker — switched to view-only.",
+    writeFail: "Couldn't save the change. Please try again.",
+    quota: "Storage is full — change not saved.",
+    installIos: "Install as an app: tap Share SHARE and choose “Add to Home Screen”.",
+    installBtn: "Install app", installText: "Works offline, no address bar.",
+    updated: "App updated.",
+    keys: "Keys: <kbd>→</kbd> or <kbd>N</kbd> — next turn · <kbd>←</kbd> — undo · <kbd>R</kbd> — rest"
+  }
+};
+
+/* ---------------- Prefs (per viewer) ---------------- */
+const prefs = (() => { try { return JSON.parse(localStorage.getItem(LS_PREFS)) || {}; } catch { return {}; } })();
+if (!I18N[prefs.lang]) prefs.lang = "uk";
+function savePrefs() { try { localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); } catch {} }
+const T = () => I18N[prefs.lang];
+
+/* ---------------- Helpers ---------------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clampInt = (v, lo, hi, d) => { v = Math.floor(Number(v)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d; };
+const rid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+function rnd(sides) {
+  try { const a = new Uint32Array(1); crypto.getRandomValues(a); return (a[0] % sides) + 1; }
+  catch { return Math.floor(Math.random() * sides) + 1; }
+}
+function rollFormula(f) {
+  const s = String(f).replace(/\s+/g, "").toLowerCase().replace(/к/g, "d");
+  if (!s || !/^[+-]?(\d*d\d+|\d+)([+-](\d*d\d+|\d+))*$/.test(s)) return null;
+  let total = 0, dice = false;
+  for (const m of s.matchAll(/([+-]?)(?:(\d*)d(\d+)|(\d+))/g)) {
+    const sign = m[1] === "-" ? -1 : 1;
+    if (m[3] !== undefined) {
+      const n = Math.min(100, m[2] === "" ? 1 : Number(m[2])), sides = Math.min(1000, Number(m[3]));
+      if (!sides) return null;
+      dice = true;
+      for (let i = 0; i < n; i++) total += sign * rnd(sides);
+    } else total += sign * Number(m[4]);
+  }
+  return { total, dice };
+}
+function fmtElapsed(turns) {
+  const min = turns * 10;
+  return T().fmt(Math.floor(min / 1440), Math.floor((min % 1440) / 60), min % 60);
+}
+const SVG = {
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  next: '<path d="m6 4 10 8-10 8z"/><path d="M19 5v14"/>',
+  tent: '<path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  lantern: '<path d="M9 2h6"/><path d="M12 2v2"/><path d="M7 7h10l-1 12H8z"/><path d="M7 7a5 3 0 0 1 10 0"/><path d="M6 21h12"/><path d="M12 11v4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  shrink: '<path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/>',
+  grow: '<path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/>',
+  left: '<path d="m15 18-6-6 6-6"/>', right: '<path d="m9 18 6-6-6-6"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>'
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${SVG[n]}</svg>`;
+
+/* ---------------- State ---------------- */
+function blank() { return { v: 1, turn: 0, timers: [], rests: [], checks: [], tables: [], activeTable: "", notes: "", log: [], settings: { ...DEF_SETTINGS }, rev: 0 }; }
+function sanitize(d) {
+  const s = blank();
+  if (!d || typeof d !== "object") return s;
+  s.turn = clampInt(d.turn, 0, 1e6, 0);
+  if (Array.isArray(d.timers)) s.timers = d.timers.filter(t => t && typeof t === "object").slice(0, 200).map(t => ({
+    id: String(t.id || rid()).slice(0, 40), label: String(t.label ?? "").slice(0, 80),
+    type: PRESETS[t.type] ? t.type : "custom", start: clampInt(t.start, 0, 1e7, 0), end: clampInt(t.end, 0, 1e7, 0)
+  }));
+  if (Array.isArray(d.rests)) s.rests = d.rests.map(Number).filter(Number.isFinite).map(Math.floor).slice(-500);
+  if (typeof d.notes === "string") s.notes = d.notes.slice(0, 20000);
+  if (Array.isArray(d.log)) s.log = d.log.filter(e => e && typeof e === "object" && ["w", "mr", "x", "add", "rest", "enc"].includes(e.t)).slice(0, 150).map(e => ({
+    id: String(e.id || rid()).slice(0, 40), t: e.t, n: clampInt(e.n, 0, 1e7, 0),
+    r: e.r == null ? null : clampInt(e.r, 1, 6, null), e: e.e == null ? null : !!e.e,
+    l: e.l == null ? undefined : String(e.l).slice(0, 80), f: e.f ? String(e.f).slice(0, 30) : undefined,
+    v: e.v == null ? undefined : clampInt(e.v, 0, 1e6, 0), gm: !!e.gm, d: sanDet(e.d)
+  }));
+  const st = d.settings && typeof d.settings === "object" ? d.settings : {};
+  s.settings = {
+    wInt: clampInt(st.wInt, 1, 144, DEF_SETTINGS.wInt),
+    wChance: clampInt(st.wChance, 0, 6, DEF_SETTINGS.wChance),
+    autoRoll: st.autoRoll === undefined ? DEF_SETTINGS.autoRoll : !!st.autoRoll,
+    hideRolls: st.hideRolls === undefined ? DEF_SETTINGS.hideRolls : !!st.hideRolls,
+    rInt: clampInt(st.rInt, 1, 144, DEF_SETTINGS.rInt),
+    playerView: ["off", "counter", "full"].includes(st.playerView) ? st.playerView : DEF_SETTINGS.playerView,
+    encTables: !!st.encTables, encDistance: !!st.encDistance, encSurprise: !!st.encSurprise, encReaction: !!st.encReaction,
+    reactMod: clampInt(st.reactMod, -3, 3, 0)
+  };
+  if (Array.isArray(d.tables)) s.tables = d.tables.filter(t => t && typeof t === "object").slice(0, 30).map(t => ({
+    id: String(t.id || rid()).slice(0, 40), name: String(t.name ?? "").slice(0, 60) || "—",
+    die: TABLE_DICE.includes(t.die) ? t.die : "eq",
+    entries: (Array.isArray(t.entries) ? t.entries : []).filter(e => e && typeof e === "object").slice(0, 120).map(e => ({
+      a: clampInt(e.a, 1, 1000, 1), b: clampInt(e.b, 1, 1000, 1), c: e.c ? String(e.c).slice(0, 20) : "",
+      n: String(e.n ?? "").slice(0, 80), x: e.x ? String(e.x).slice(0, 200) : ""
+    }))
+  }));
+  s.activeTable = typeof d.activeTable === "string" && s.tables.some(t => t.id === d.activeTable) ? d.activeTable : "";
+  if (Array.isArray(d.checks)) s.checks = d.checks.filter(c => Array.isArray(c) && c.length >= 3).slice(-600).map(c => {
+    const out = [clampInt(c[0], 0, 1e7, 0), c[1] == null ? null : clampInt(c[1], 1, 6, null), c[2] == null ? null : !!c[2]];
+    const det = sanDet(c[3]); if (det) out.push(det);
+    return out;
+  });
+  s.rev = clampInt(d.rev, 0, 1e12, 0);
+  return s;
+}
+const clone = o => JSON.parse(JSON.stringify(o));
+function sanDet(d) {
+  if (!d || typeof d !== "object") return undefined;
+  const o = {}, str = (v, n) => v == null || v === "" ? undefined : String(v).slice(0, n), int = (v, lo, hi) => v == null ? undefined : clampInt(v, lo, hi, undefined);
+  o.tb = str(d.tb, 60); o.die = TABLE_DICE.includes(d.die) ? d.die : undefined; o.tr = int(d.tr, 0, 1000);
+  o.m = str(d.m, 80); o.x = str(d.x, 200); o.cf = str(d.cf, 20); o.c = int(d.c, 0, 100000);
+  o.dist = int(d.dist, 0, 1000); o.dsur = d.dsur ? true : undefined;
+  o.sp = int(d.sp, 1, 6); o.sm = int(d.sm, 1, 6); o.re = int(d.re, 2, 12); o.rm = int(d.rm, -3, 3);
+  for (const k of Object.keys(o)) if (o[k] === undefined) delete o[k];
+  return Object.keys(o).length ? o : undefined;
+}
+
+/* ---------------- Encounter tables ---------------- */
+function rollDie(die) {
+  if (die === "2d6") return rnd(6) + rnd(6);
+  const m = /^d(\d+)$/.exec(die); return m ? rnd(Number(m[1])) : rnd(6);
+}
+function parseTable(text, die) {
+  const out = []; let next = 1;
+  for (let raw of String(text).split(/\r?\n/)) {
+    let line = raw.trim(); if (!line || line.startsWith("#")) continue;
+    let a = null, b = null, c = "", x = "";
+    const rm = /^(\d+)\s*(?:[-–—]\s*(\d+))?\s*[:.)]\s*/.exec(line);
+    if (rm) { a = Number(rm[1]); b = rm[2] ? Number(rm[2]) : a; line = line.slice(rm[0].length); }
+    const pi = line.indexOf("|"); if (pi >= 0) { x = line.slice(pi + 1).trim(); line = line.slice(0, pi).trim(); }
+    const cm = /^(\d*[dDкК]\d+(?:\s*[+-]\s*\d+)?|\d+)\s+(.+)$/.exec(line);
+    if (cm) { c = cm[1].replace(/\s+/g, "").replace(/[кК]/g, "d").toLowerCase(); line = cm[2]; }
+    if (!line) continue;
+    if (die === "eq" || a == null) { a = next; b = next; }
+    if (b < a) [a, b] = [b, a];
+    next = b + 1;
+    out.push({ a, b, c, n: line.slice(0, 80), x: x.slice(0, 200) });
+    if (out.length >= 120) break;
+  }
+  return out;
+}
+function tableText(tb) {
+  return tb.entries.map(e => `${tb.die === "eq" ? "" : (e.a === e.b ? e.a : `${e.a}-${e.b}`) + ": "}${e.c ? e.c + " " : ""}${e.n}${e.x ? " | " + e.x : ""}`).join("\n");
+}
+function rollTable(tb) {
+  if (!tb || !tb.entries.length) return null;
+  let roll, entry;
+  if (tb.die === "eq") { roll = rnd(tb.entries.length); entry = tb.entries[roll - 1]; }
+  else { roll = rollDie(tb.die); entry = tb.entries.find(e => roll >= e.a && roll <= e.b); }
+  const d = { tb: tb.name, die: tb.die, tr: roll };
+  if (entry) {
+    d.m = entry.n; if (entry.x) d.x = entry.x;
+    if (entry.c) { const r = rollFormula(entry.c); if (r) { d.c = Math.max(1, r.total); if (r.dice) d.cf = entry.c; } }
+  }
+  return d;
+}
+function encounterDetails(s) {
+  const st = s.settings, d = {};
+  if (st.encTables) { const r = rollTable(s.tables.find(t => t.id === s.activeTable)); if (r) Object.assign(d, r); }
+  if (st.encSurprise) { d.sp = rnd(6); d.sm = rnd(6); }
+  if (st.encDistance) d.dist = (rnd(6) + rnd(6)) * 10;   // OSE dungeon: 2d6 × 10′, surprise does not change it
+  if (st.encReaction) { d.re = rnd(6) + rnd(6); d.rm = st.reactMod; }
+  return Object.keys(d).length ? d : undefined;
+}
+const advOn = st => st.encTables || st.encDistance || st.encSurprise || st.encReaction;
+function encLines(d) {
+  if (!d) return [];
+  const E = T().enc, out = [];
+  if (d.m) out.push(E.m(d.c, d.m, d.cf) + (d.tb ? ` [${E.tbRoll(d.tb, d.die, d.tr)}]` : ""));
+  else if (d.tb) out.push(E.noEntry(d.tb, d.die === "eq" ? "№" : d.die, d.tr));
+  if (d.x) out.push(d.x);
+  const more = [];
+  if (d.dist != null) more.push(E.dist(d.dist, d.dsur));
+  if (d.sp != null) more.push(E.surp(d.sp, d.sm));
+  if (d.re != null) { const t = d.re + (d.rm || 0); more.push(E.react(d.rm ? `${d.re}${d.rm > 0 ? "+" : ""}${d.rm} = ${t}` : t, E.reactLbl(t))); }
+  if (more.length) out.push(more.join(" · "));
+  return out;
+}
+function prune(s) {
+  const cutoff = s.turn - TURNS_PER_DAY * 2;
+  s.timers = s.timers.filter(t => t.end > cutoff);
+  s.rests = s.rests.filter(r => r > cutoff);
+  s.checks = s.checks.filter(c => c[0] > cutoff);
+  s.log = s.log.slice(0, 150);
+}
+
+let state = blank();
+let mode = "conn";          // conn | local | shared
+let canWrite = false;       // referee controls visible
+let connState = "conn";     // conn | sync | off
+let viewDay = null;         // null = follow current turn
+let banner = null;          // { items: [{ n, d, manual }] }
+let db = null, docRef = null, writing = false, dirty = false, loadTimer = null, loaded = false;
+
+/* ---------------- Persistence ---------------- */
+function loadLocal() { try { return sanitize(JSON.parse(localStorage.getItem(LS_STATE))); } catch { return blank(); } }
+function saveLocal() { try { localStorage.setItem(LS_STATE, JSON.stringify(state)); } catch {} }
+
+async function flush() {
+  if (!docRef || writing) return;
+  writing = true; renderStatus();
+  try {
+    while (dirty) {
+      dirty = false;
+      const body = clone(state);
+      try { await docRef.set(body); }
+      catch (e) {
+        if (e && e.code === "unavailable") { await new Promise(r => setTimeout(r, 400 + Math.random() * 800)); await docRef.set(clone(state)); }
+        else throw e;
+      }
+    }
+    connState = "sync";
+  } catch (e) {
+    dirty = false;
+    const code = e && e.code;
+    if (code === "invalid_argument" || code === "not_granted") { canWrite = false; toast(T().writeDenied, "bad"); }
+    else if (code === "quota_exceeded") toast(T().quota, "bad");
+    else toast(T().writeFail, "bad");
+    try { const snap = await docRef.get(); state = sanitize(snap.exists ? clone(snap.data()) : null); } catch {}
+  } finally { writing = false; render(); }
+}
+
+function commit() {
+  state.rev = (state.rev || 0) + 1;
+  prune(state);
+  render();
+  if (mode === "local") saveLocal();
+  else if (mode === "shared") { dirty = true; flush(); }
+}
+
+/* ---------------- Turn logic ---------------- */
+function advanceTo(s, target) {
+  target = Math.max(0, Math.floor(target));
+  const prev = s.turn;
+  const ev = { encounters: [], quiet: [], rest: [], expired: [], det: [] };
+  if (target > prev) {
+    const { wInt, rInt, wChance, autoRoll, hideRolls } = s.settings;
+    const add = [];
+    for (let n = prev + 1; n <= target; n++) {
+      if (n % wInt === 0) {
+        if (autoRoll) {
+          const r = rnd(6), enc = r <= wChance;
+          const det = enc ? encounterDetails(s) : undefined;
+          add.push({ id: rid(), t: "w", n, r, e: enc, gm: hideRolls, d: det });
+          s.checks.push(det ? [n, r, enc, det] : [n, r, enc]);
+          if (enc) ev.det.push({ n, d: det });
+          (enc ? ev.encounters : ev.quiet).push({ n, r });
+        } else { add.push({ id: rid(), t: "w", n, r: null, e: null, gm: false }); s.checks.push([n, null, null]); }
+      }
+      if (n % rInt === 0 && !s.rests.some(x => x > n - rInt && x <= n)) { add.push({ id: rid(), t: "mr", n }); ev.rest.push(n); }
+      for (const t of s.timers) if (t.end === n) { add.push({ id: rid(), t: "x", n, l: t.label }); ev.expired.push(t.label); }
+    }
+    s.log = add.reverse().concat(s.log);
+  } else if (target < prev) {
+    // Undo: forget checks and rests in the turns that were un-ticked
+    s.checks = s.checks.filter(c => c[0] <= target);
+    s.rests = s.rests.filter(r => r <= target);
+  }
+  s.turn = target;
+  return { ev, delta: target - prev };
+}
+
+function setTurn(target, { isRest = false } = {}) {
+  if (!canWrite) return;
+  const s = state;
+  const prevTurn = s.turn;
+  if (isRest) { s.rests.push(s.turn + 1); s.log.unshift({ id: rid(), t: "rest", n: s.turn + 1 }); }
+  const { ev, delta } = advanceTo(s, target);
+  if (delta === 0 && !isRest) return;
+  viewDay = null;
+  if (delta > 0) {
+    banner = ev.det.length ? { items: ev.det } : null;
+    if (!ev.encounters.length && ev.quiet.length === 1 && delta === 1) toast(`${T().turnShort(ev.quiet[0].n)} · d6 = ${ev.quiet[0].r} — ${T().noEncounter}`, "good");
+    else if (!ev.encounters.length && ev.quiet.length > 1) toast(`${ev.quiet.length}× d6 — ${T().noEncounter}`, "good");
+    if (ev.rest.length) toast((delta > 1 && ev.rest.length === 1 ? T().turnShort(ev.rest[0]) + ": " : "") + T().mustRest);
+    if (ev.expired.length) toast(ev.expired.map(l => T().expired(l)).join(" "));
+    if (ev.encounters.length) vibrate();
+  } else if (target < prevTurn) banner = null;
+  commit();
+}
+function vibrate() { try { navigator.vibrate && navigator.vibrate([80, 60, 80]); } catch {} }
+
+function addTimer(type, label, duration) {
+  if (!canWrite) return false;
+  let turns = Number(duration), f;
+  if (!Number.isFinite(turns)) {
+    const r = rollFormula(duration);
+    if (!r) { toast(T().badFormula, "bad"); return false; }
+    turns = r.total; f = String(duration).replace(/\s+/g, "");
+  }
+  turns = Math.max(1, Math.floor(turns));
+  label = (label || T().preset[type] || T().preset.custom).slice(0, 80);
+  state.timers.push({ id: rid(), label, type, start: state.turn, end: state.turn + turns });
+  state.log.unshift({ id: rid(), t: "add", n: state.turn, l: label, f, v: turns });
+  if (f) toast(T().added(label, f, turns));
+  commit();
+  return true;
+}
+
+/* ---------------- Rendering ---------------- */
+const curDay = () => Math.floor(Math.max(state.turn - 1, 0) / TURNS_PER_DAY);
+const shownDay = () => viewDay ?? curDay();
+function view() {
+  if (mode === "conn" || (mode === "shared" && !loaded)) return "loading";
+  if (canWrite) return "gm";
+  return "player-" + state.settings.playerView;
+}
+
+function gridCtx(isGM) {
+  const s = state, { wInt, rInt, hideRolls } = s.settings;
+  const checks = new Map(s.checks.map(c => [c[0], c]));
+  const rests = new Set(s.rests);
+  const restOk = n => s.rests.some(x => x > n - rInt && x <= n);
+  const nextW = Math.ceil((s.turn + 1) / wInt) * wInt;
+  const nextR = Math.ceil((s.turn + 1) / rInt) * rInt;
+  const timers = s.timers.filter(t => t.end > t.start).slice().sort((a, b) => a.start - b.start || a.end - b.end);
+  return { isGM, showRolls: isGM || !hideRolls, checks, rests, restOk, nextW, nextR, timers, wInt, rInt };
+}
+const tcolor = type => `var(--t-${PRESETS[type] ? type : "custom"})`;
+
+function hourBlock(hour, g) {
+  const L = T(), s = state;
+  let labels = "", boxes = "";
+  for (let i = 1; i <= TURNS_PER_HOUR; i++) {
+    const n = hour * TURNS_PER_HOUR + i;
+    const tod = n - Math.floor((n - 1) / TURNS_PER_DAY) * TURNS_PER_DAY;
+    labels += `<span>${n % g.wInt === 0 ? L.letterW : ""}${n % g.rInt === 0 ? L.letterR : ""}</span>`;
+    const cls = ["box"], tip = [`${L.turnShort(n)} (${L.tip.day(Math.floor((n - 1) / TURNS_PER_DAY) + 1)}) · ${fmtElapsed(n)}`];
+    let inner = `<span class="tn">${tod}</span>`;
+    if (n <= s.turn) cls.push("done");
+    if (n === s.turn + 1) cls.push("next");
+
+    // Rest
+    if (g.rests.has(n)) { cls.push("rested"); tip.push(L.rested); }
+    else if (n % g.rInt === 0 && !g.restOk(n)) {
+      if (n <= s.turn) { inner += `<span class="miss">!</span>`; tip.push(L.tip.restMiss); }
+      else if (n === g.nextR) { cls.push("due"); tip.push(L.tip.restDue); }
+    }
+
+    // Wandering check
+    const c = g.checks.get(n);
+    if (c && n <= s.turn) {
+      if (!g.showRolls) { inner += `<span class="chk">•</span>`; tip.push(L.tip.checkHidden); }
+      else if (c[1] == null) { inner += `<span class="chk">?</span>`; tip.push(L.tip.checkManual); }
+      else {
+        if (c[2]) cls.push("enc");
+        inner += `<span class="chk ${c[2] ? "e" : ""}">${c[1]}</span>`;
+        tip.push(L.tip.check(c[1], c[2]));
+        if (c[3]) tip.push(...encLines(c[3]));
+      }
+    } else if (n === g.nextW && n > s.turn) { inner += `<span class="chk q">?</span>`; tip.push(L.tip.checkNext); }
+
+    // Timers: bars across their span, letter where they run out
+    let bars = "", ends = "";
+    for (const t of g.timers) {
+      if (n <= t.start || n > t.end) continue;
+      const col = tcolor(t.type), first = n === t.start + 1, last = n === t.end;
+      bars += `<i class="${first ? "s" : ""} ${last ? "e" : ""}" style="background:${col}"></i>`;
+      if (last) ends += `<span style="color:${col}">${esc(L.marker[t.type] || "★")}</span>`;
+      tip.push(`${L.tip.timer(t.label, t.start + 1, t.end)}${first ? " · " + L.tip.starts : ""}${last ? " · " + L.tip.ends : ""}`);
+    }
+    if (ends) inner += `<span class="ends">${ends}</span>`;
+    if (bars) inner += `<span class="bars">${bars}</span>`;
+
+    boxes += `<div class="${cls.join(" ")}" ${g.isGM ? `data-action="box"` : ""} data-turn="${n}" title="${esc(tip.join("\n"))}">${inner}</div>`;
+  }
+  return `<div class="hour"><div class="labels">${labels}</div><div class="row"><div class="boxes">${boxes}</div><span class="hnum">${(hour % HOURS_PER_DAY) + 1}</span></div></div>`;
+}
+
+function renderStatus() {
+  const L = T(), el = $("status");
+  let key, cls;
+  if (mode === "conn") { key = "conn"; cls = "wait"; }
+  else if (mode === "local") { key = "local"; cls = "wait"; }
+  else if (connState === "off") { key = "off"; cls = "bad"; }
+  else if (!canWrite) { key = "ro"; cls = "ro"; }
+  else if (writing || dirty) { key = "saving"; cls = "wait"; }
+  else { key = "sync"; cls = "ok"; }
+  el.hidden = mode === "local";
+  el.className = "pill " + cls;
+  el.textContent = L.st[key];
+  el.title = L.stTip[key] || L.stTip.sync;
+}
+
+function render() {
+  const L = T(), v = view(), compact = !!prefs.compact && (v === "gm" || v === "player-full");
+  const app = $("app");
+  document.documentElement.lang = prefs.lang;
+  document.title = L.title + " · OSE";
+  app.classList.toggle("gm", v === "gm");
+  app.classList.toggle("compact", compact);
+  $("hTitle").innerHTML = `${esc(L.title)}<small>${esc(L.subtitle)}</small>`;
+  $("langBtn").textContent = L.langName;
+  $("langBtn").title = prefs.lang === "uk" ? "English" : "Українська";
+  $("compactBtn").innerHTML = ic(prefs.compact ? "grow" : "shrink");
+  $("compactBtn").title = prefs.compact ? L.expand : L.compact;
+  $("compactBtn").hidden = !(v === "gm" || v === "player-full");
+  $("settingsBtn").innerHTML = ic("gear");
+  $("settingsBtn").title = L.settings;
+  $("settingsBtn").hidden = v !== "gm";
+  renderStatus();
+
+  const main = $("main"), bottom = $("bottom");
+  const showBottom = v === "gm" || v === "player-full";
+  bottom.hidden = !showBottom;
+  $("kbd").hidden = v !== "gm";
+  $("kbd").innerHTML = L.keys;
+
+  if (v === "loading") { main.innerHTML = `<div class="card counter"><div class="sub">${esc(connState === "off" ? L.stTip.off : L.loading)}</div></div>`; return; }
+  if (v === "player-off") { main.innerHTML = `<div class="card counter"><div class="sub">${esc(L.offView)}</div></div>`; return; }
+  if (v === "player-counter") {
+    main.innerHTML = `<div class="card counter"><div class="num">${state.turn}</div><div class="sub">${esc(L.turns(state.turn))}</div>
+      <div class="row2"><span>${esc(L.elapsed)}: <b>${esc(fmtElapsed(state.turn))}</b></span><span>${esc(L.day)} <b>${curDay() + 1}</b></span></div></div>`;
+    return;
+  }
+
+  const isGM = v === "gm", s = state;
+  const nextW = Math.ceil((s.turn + 1) / s.settings.wInt) * s.settings.wInt - s.turn;
+  const tod = s.turn - curDay() * TURNS_PER_DAY;
+  const active = s.timers.filter(t => t.end > s.turn).sort((a, b) => a.end - b.end);
+
+  const stats = `<div class="stats">
+    <div class="stat big"><span class="num">${s.turn}</span><span class="lbl">${esc(L.turns(s.turn))}</span></div>
+    <div class="stat"><span class="lbl">${esc(L.elapsed)}</span><b>${esc(fmtElapsed(s.turn))}</b></div>
+    <div class="stat hide-compact"><span class="lbl">${esc(L.turnOfDay)}</span><b>${tod}/${TURNS_PER_DAY}</b></div>
+    <div class="stat"><span class="lbl">${esc(L.nextW)}</span><b>${nextW}</b></div>
+  </div>`;
+
+  const controls = isGM ? `<div class="controls">
+    <button class="btn primary" data-action="advance">${ic("next")} ${esc(L.advance)}</button>
+    <button class="btn" data-action="back" title="${esc(L.backTip)}">${ic("undo")} ${esc(L.back)}</button>
+    <button class="btn" data-action="rest" title="${esc(L.restTip)}">${ic("tent")} ${esc(L.rest)}</button>
+    <span class="sep"></span>
+    <button class="btn" data-action="preset" data-type="torch">${ic("flame")} ${esc(L.preset.torch)}</button>
+    <button class="btn" data-action="preset" data-type="lantern">${ic("lantern")} ${esc(L.preset.lantern)}</button>
+    <button class="btn" data-action="timer">${ic("plus")} ${esc(L.timer)}</button>
+    <span class="sep hide-compact"></span>
+    <button class="btn ghost hide-compact" data-action="reset" title="${esc(L.reset)}">${ic("trash")}</button>
+  </div>` : "";
+
+  const ban = isGM && banner ? `<div class="banner" role="alert"><div class="items">${banner.items.map(it => `<div>⚔ ${esc(it.manual ? L.enc.manual : L.notifyEncounter([it.n]))}${encLines(it.d).map(l => `<div class="encd">${esc(l)}</div>`).join("")}</div>`).join("")}</div><button data-action="dismiss" aria-label="✕">${ic("x")}</button></div>` : "";
+  const st = s.settings;
+  const encCard = isGM && advOn(st) ? `<div class="card encbar">
+      <h4>${esc(L.enc.title)}</h4>
+      ${st.encTables ? `<select data-change="activeTable" aria-label="${esc(L.enc.which)}"><option value="">${esc(L.enc.noTable)}</option>${s.tables.map(t => `<option value="${esc(t.id)}" ${t.id === s.activeTable ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select>
+      <button class="btn" data-action="tables">${esc(L.enc.tables)}</button>` : ""}
+      <button class="btn" data-action="rollEnc">⚔ ${esc(L.enc.roll)}</button>
+    </div>` : "";
+
+  const g = gridCtx(isGM);
+  let gridCard;
+  if (compact) {
+    const hour = Math.floor(s.turn / TURNS_PER_HOUR);
+    const chips = active.map(t => {
+      const left = t.end - s.turn;
+      return `<span class="chip ${left <= 1 ? "warn" : ""}" title="${esc(t.label + " · " + L.until(t.end))}"><span class="tsw" style="background:${tcolor(t.type)}"></span>${esc(t.label)} · ${left}${isGM ? `<button class="x" data-action="rmTimer" data-id="${esc(t.id)}" aria-label="${esc(L.remove)}">${ic("x")}</button>` : ""}</span>`;
+    }).join("");
+    gridCard = `<div class="card"><div class="grid">${hourBlock(hour, g)}${hourBlock(hour + 1, g)}</div>${chips ? `<div class="chips">${chips}</div>` : ""}</div>`;
+  } else {
+    const day = shownDay();
+    let grid = "";
+    for (let h = 0; h < HOURS_PER_DAY; h++) grid += hourBlock(day * HOURS_PER_DAY + h, g);
+    gridCard = `<div class="card">
+      <div class="gridhead">
+        <div class="legend"><span><b>${L.letterW}</b> ${esc(L.legend.W)}</span><span><b>${L.letterR}</b> ${esc(L.legend.R)}</span></div>
+        <div class="daynav">
+          <button class="iconbtn" data-action="prevDay" aria-label="←" ${day === 0 ? "disabled" : ""}>${ic("left")}</button>
+          <button class="cur ${viewDay !== null && viewDay !== curDay() ? "away" : ""}" data-action="curDay" title="${esc(L.currentDay)}">${esc(L.day)} ${day + 1}</button>
+          <button class="iconbtn" data-action="nextDay" aria-label="→">${ic("right")}</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="g">37</span> ${esc(L.lg.num)}</span>
+        <span><span class="g">4</span> ${esc(L.lg.roll)}</span>
+        <span><span class="g" style="color:var(--accent)">?</span> ${esc(L.lg.next)}</span>
+        <span><span class="sw" style="background:var(--enc)"></span>${esc(L.lg.enc)}</span>
+        <span><span class="sw" style="background:var(--rest)"></span>${esc(L.lg.rested)}</span>
+        <span><span class="sw" style="box-shadow:inset 0 0 0 2px var(--rest)"></span>${esc(L.lg.due)}</span>
+        <span><span class="g" style="background:var(--warn);color:#fff;border-radius:2px;padding:0 3px">!</span> ${esc(L.lg.miss)}</span>
+      </div>
+      <div class="legend">${Object.keys(PRESETS).map(k => `<span><span class="bar" style="background:${tcolor(k)}"></span><b style="color:${tcolor(k)}">${esc(L.marker[k])}</b> ${esc(L.preset[k])}</span>`).join("")}<span>${esc(L.lg.bars)}</span><span class="touch-only"><b>${esc(L.lg.hold)}</b></span></div>
+      <div class="grid">${grid}</div>
+    </div>`;
+  }
+  main.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">${stats}${ban}${controls}${encCard}${gridCard}</div>`;
+
+  // Timers
+  $("hTimers").textContent = L.activeTimers;
+  $("timers").innerHTML = active.length ? active.map(t => {
+    const left = t.end - s.turn;
+    const endDay = Math.floor((t.end - 1) / TURNS_PER_DAY);
+    return `<li class="timer ${left <= 1 ? "warn" : ""}"><span class="mk" style="color:${tcolor(t.type)}"><span class="tsw" style="background:${tcolor(t.type)}"></span>${esc(L.marker[t.type] || "★")}</span><span>${esc(t.label)}</span><span class="left">${esc(L.left(left))}<small>${esc(L.until(t.end - endDay * TURNS_PER_DAY, endDay !== curDay() ? endDay + 1 : 0))}</small></span>${isGM ? `<button class="x" data-action="rmTimer" data-id="${esc(t.id)}" title="${esc(L.remove)}">${ic("x")}</button>` : "<span></span>"}</li>`;
+  }).join("") : `<li class="empty">${esc(L.noTimers)}</li>`;
+
+  // Log
+  $("hLog").innerHTML = `<span>${esc(L.log)}</span>${isGM && s.log.length ? `<button class="btn ghost" style="height:28px;padding:0 10px;font-size:13px" data-action="clearLog">${esc(L.clearLog)}</button>` : ""}`;
+  const entries = s.log.slice(0, 80).map(e => {
+    let txt;
+    switch (e.t) {
+      case "w":
+        if (e.gm && !isGM) txt = esc(L.hiddenRoll);
+        else if (e.r == null) txt = esc(L.wanderingManual);
+        else txt = `<span class="die">${e.r}</span>${e.e ? `<span class="enc">${esc(L.encounter)}</span>` : esc(L.noEncounter)}${encLines(e.d).map(l => `<div class="encd">${esc(l)}</div>`).join("")}`;
+        break;
+      case "enc":
+        if (e.gm && !isGM) txt = `<span class="enc">${esc(L.encounter)}</span>`;
+        else txt = `<span class="enc">${esc(L.enc.manual)}</span>${encLines(e.d).map(l => `<div class="encd">${esc(l)}</div>`).join("")}`;
+        break;
+      case "mr": txt = esc(L.mustRest); break;
+      case "x": txt = esc(L.expired(e.l || "")); break;
+      case "add": txt = esc(L.added(e.l || "", e.f, e.v ?? 0)); break;
+      case "rest": txt = esc(L.restLog); break;
+    }
+    return `<li><span class="tn">${esc(L.turnShort(e.n))}</span><span>${txt}</span></li>`;
+  }).join("");
+  $("log").innerHTML = entries || `<li class="empty">${esc(L.noLog)}</li>`;
+
+  // Notes (keep the element; don't clobber while typing)
+  $("hNotes").textContent = L.notes;
+  const ta = $("notes");
+  ta.readOnly = !isGM;
+  if (document.activeElement !== ta && ta.value !== s.notes) ta.value = s.notes;
+}
+
+/* ---------------- Toasts & modal ---------------- */
+function toast(msg, kind = "") {
+  const el = document.createElement("div");
+  el.className = "toast " + kind;
+  el.textContent = msg;
+  $("toasts").appendChild(el);
+  while ($("toasts").children.length > 3) $("toasts").firstChild.remove();
+  setTimeout(() => el.remove(), 4200);
+}
+
+let modalResolve = null;
+function modal({ title, body, ok, cancel = true, onOpen }) {
+  const L = T();
+  $("mTitle").textContent = title;
+  $("mBody").innerHTML = body;
+  $("mOk").textContent = ok || L.ok;
+  $("mCancel").textContent = L.cancel;
+  $("mCancel").hidden = !cancel;
+  $("modal").hidden = false;
+  const form = $("mForm");
+  onOpen && onOpen(form);
+  setTimeout(() => { const f = form.querySelector("input[type=text],input[type=number],select"); f ? f.focus() : $("mOk").focus(); }, 30);
+  return new Promise(res => { modalResolve = res; });
+}
+function closeModal(val) { $("modal").hidden = true; const r = modalResolve; modalResolve = null; r && r(val); }
+$("mForm").addEventListener("submit", e => { e.preventDefault(); closeModal($("mForm").elements); });
+$("mCancel").addEventListener("click", () => closeModal(false));
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) closeModal(false); });
+const confirmBox = (text, ok) => modal({ title: T().title, body: `<p>${esc(text)}</p>`, ok }).then(Boolean);
+
+/* ---------------- Actions ---------------- */
+const actions = {
+  advance: () => setTurn(state.turn + 1),
+  back: () => { if (state.turn > 0) setTurn(state.turn - 1); },
+  rest: () => setTurn(state.turn + 1, { isRest: true }),
+  async box(el) {
+    const n = Number(el.dataset.turn), cur = state.turn;
+    const goal = n === cur ? n - 1 : n;
+    if (goal - cur > TURNS_PER_HOUR && !(await confirmBox(T().jumpConfirm(goal - cur)))) return;
+    setTurn(goal);
+  },
+  preset(el) { const type = el.dataset.type; addTimer(type, T().preset[type], PRESETS[type].duration); },
+  async timer() {
+    const L = T();
+    const opts = Object.keys(PRESETS).map(k => `<option value="${k}" data-d="${PRESETS[k].duration}">${esc(L.preset[k])} (${PRESETS[k].duration})</option>`).join("");
+    const f = await modal({
+      title: L.addTimer, ok: L.add,
+      body: `<div class="field"><label for="fType">${esc(L.type)}</label><select id="fType" name="type">${opts}</select></div>
+        <div class="field"><label for="fLabel">${esc(L.label)}</label><input type="text" id="fLabel" name="label" maxlength="80" placeholder="${esc(L.labelHint)}"></div>
+        <div class="field"><label for="fDur">${esc(L.duration)}</label><input type="text" id="fDur" name="duration" value="${PRESETS.torch.duration}" inputmode="text"><span class="hint">${esc(L.durationHint)}</span></div>`,
+      onOpen: form => form.elements.type.addEventListener("change", e => { form.elements.duration.value = e.target.selectedOptions[0].dataset.d; })
+    });
+    if (!f) return;
+    const dur = f.duration.value.trim();
+    if (!dur) return;
+    addTimer(f.type.value, f.label.value.trim(), dur);
+  },
+  rmTimer(el) { state.timers = state.timers.filter(t => t.id !== el.dataset.id); commit(); },
+  async reset() {
+    if (!(await confirmBox(T().resetConfirm, T().reset))) return;
+    const keep = { notes: state.notes, settings: state.settings, tables: state.tables, activeTable: state.activeTable, rev: state.rev };
+    state = Object.assign(blank(), keep);
+    banner = null; viewDay = null;
+    commit();
+  },
+  async clearLog() { state.log = []; commit(); },
+  rollEnc() {
+    const d = encounterDetails(state);
+    state.log.unshift({ id: rid(), t: "enc", n: state.turn, d, gm: state.settings.hideRolls });
+    banner = { items: [{ n: state.turn, d, manual: true }] };
+    vibrate(); commit();
+  },
+  async tables() {
+    const L = T(), E = L.enc;
+    let cur = state.tables.find(t => t.id === state.activeTable) || state.tables[0] || null;
+    let delArmed = false;
+    const fill = (form, tb) => {
+      form.elements.tname.value = tb ? tb.name : E.defName(state.tables.length + 1);
+      form.elements.tdie.value = tb ? tb.die : "d6";
+      form.elements.tentries.value = tb ? tableText(tb) : "";
+      $("tDel").hidden = !tb; delArmed = false; $("tDel").textContent = E.del;
+    };
+    const f = await modal({
+      title: E.editTitle, ok: L.save,
+      body: `<div class="field"><label for="tWhich">${esc(E.which)}</label><select id="tWhich" name="which">${state.tables.map(t => `<option value="${esc(t.id)}" ${cur && t.id === cur.id ? "selected" : ""}>${esc(t.name)}</option>`).join("")}<option value="__new" ${cur ? "" : "selected"}>${esc(E.newTable)}</option></select></div>
+        <div class="field"><label for="tName">${esc(E.name)}</label><input type="text" id="tName" name="tname" maxlength="60" placeholder="${esc(E.namePh)}"></div>
+        <div class="field"><label for="tDie">${esc(E.die)}</label><select id="tDie" name="tdie">${TABLE_DICE.map(dd => `<option value="${dd}">${dd === "eq" ? esc(E.dieEq) : dd}</option>`).join("")}</select></div>
+        <div class="field"><label for="tEntries">${esc(E.entries)}</label><textarea id="tEntries" name="tentries" class="mono" spellcheck="false"></textarea><div class="tbl-help">${esc(E.help)}</div></div>
+        <div class="field"><button type="button" class="btn danger" id="tDel" style="align-self:flex-start">${esc(E.del)}</button></div>`,
+      onOpen: form => {
+        fill(form, cur);
+        form.elements.which.addEventListener("change", e => { cur = state.tables.find(t => t.id === e.target.value) || null; fill(form, cur); });
+        $("tDel").addEventListener("click", () => {
+          if (!cur) return;
+          if (!delArmed) { delArmed = true; $("tDel").textContent = E.delSure; return; }
+          state.tables = state.tables.filter(t => t.id !== cur.id);
+          if (state.activeTable === cur.id) state.activeTable = state.tables[0]?.id || "";
+          closeModal(false); commit();
+        });
+      }
+    });
+    if (!f) return;
+    const die = TABLE_DICE.includes(f.tdie.value) ? f.tdie.value : "eq";
+    const entries = parseTable(f.tentries.value, die);
+    if (!entries.length) { toast(E.empty, "bad"); return; }
+    const name = (f.tname.value.trim() || E.defName(state.tables.length + 1)).slice(0, 60);
+    if (cur && state.tables.some(t => t.id === cur.id)) { Object.assign(state.tables.find(t => t.id === cur.id), { name, die, entries }); }
+    else { cur = { id: rid(), name, die, entries }; if (state.tables.length >= 30) state.tables.shift(); state.tables.push(cur); }
+    state.activeTable = cur.id;
+    toast(E.saved, "good"); commit();
+  },
+  dismiss() { banner = null; render(); },
+  prevDay() { viewDay = Math.max(0, shownDay() - 1); render(); },
+  nextDay() { viewDay = shownDay() + 1; render(); },
+  curDay() { viewDay = null; render(); },
+  compact() { prefs.compact = !prefs.compact; savePrefs(); render(); },
+  lang() { prefs.lang = prefs.lang === "uk" ? "en" : "uk"; savePrefs(); render(); },
+  async settings() {
+    const L = T(), st = state.settings, S = L.set;
+    const num = (k, min, max) => `<div class="field"><label for="s_${k}">${esc(S[k][0])}</label><input type="number" id="s_${k}" name="${k}" min="${min}" max="${max}" value="${st[k]}"><span class="hint">${esc(S[k][1])}</span></div>`;
+    const chk = k => `<label class="field check"><input type="checkbox" name="${k}" ${st[k] ? "checked" : ""}><span><span class="lab">${esc(S[k][0])}</span><br><span class="hint">${esc(S[k][1])}</span></span></label>`;
+    const f = await modal({
+      title: L.settings, ok: L.save,
+      body: `${num("wInt", 1, 144)}${num("wChance", 0, 6)}${chk("autoRoll")}${chk("hideRolls")}${num("rInt", 1, 144)}
+        <hr><h3 class="sub">${esc(S.advTitle)}</h3><p class="hint" style="color:var(--muted);font-size:14px">${esc(S.advHint)}</p>
+        ${chk("encTables")}${chk("encSurprise")}${chk("encDistance")}${chk("encReaction")}${num("reactMod", -3, 3)}
+        <hr>
+        <div class="field"><label for="s_pv">${esc(S.playerView[0])}</label><select id="s_pv" name="playerView">${["off", "counter", "full"].map(k => `<option value="${k}" ${st.playerView === k ? "selected" : ""}>${esc(S.pv[k])}</option>`).join("")}</select><span class="hint">${esc(S.playerView[1])}</span></div>
+        <hr><h3 style="font-size:17px">${esc(S.backup)}</h3>
+        <div class="field"><button type="button" class="btn" id="bCopy">${esc(S.copy)}</button></div>
+        <div class="field"><label for="bImp">${esc(S.importLbl)}</label><textarea id="bImp" rows="3"></textarea><button type="button" class="btn" id="bImpBtn" style="align-self:flex-start">${esc(S.importBtn)}</button></div>`,
+      onOpen: () => {
+        $("bCopy").addEventListener("click", async () => {
+          const json = JSON.stringify(state);
+          try { await navigator.clipboard.writeText(json); toast(S.copied, "good"); }
+          catch { $("bImp").value = json; $("bImp").select(); toast(S.copyFail, "bad"); }
+        });
+        $("bImpBtn").addEventListener("click", () => {
+          let d; try { d = JSON.parse($("bImp").value); } catch { d = null; }
+          if (!d || typeof d !== "object" || !("turn" in d)) { toast(S.importBad, "bad"); return; }
+          const rev = state.rev; state = sanitize(d); state.rev = rev; banner = null; viewDay = null;
+          closeModal(false); commit(); toast(S.imported, "good");
+        });
+      }
+    });
+    if (!f) return;
+    state.settings = sanitize({ settings: {
+      wInt: f.wInt.value, wChance: f.wChance.value, autoRoll: f.autoRoll.checked, hideRolls: f.hideRolls.checked,
+      rInt: f.rInt.value, playerView: f.playerView.value,
+      encTables: f.encTables.checked, encDistance: f.encDistance.checked, encSurprise: f.encSurprise.checked, encReaction: f.encReaction.checked,
+      reactMod: f.reactMod.value } }).settings;
+    commit();
+  }
+};
+const gmOnly = new Set(["advance", "back", "rest", "box", "preset", "timer", "rmTimer", "reset", "clearLog", "settings", "rollEnc", "tables"]);
+document.addEventListener("change", e => {
+  const el = e.target.closest("[data-change]");
+  if (!el || !canWrite) return;
+  if (el.dataset.change === "activeTable") { state.activeTable = state.tables.some(t => t.id === el.value) ? el.value : ""; commit(); }
+});
+// Long-press (or tap, for viewers) on a box shows its details — touch screens have no tooltips
+let lpTimer = null, lpFired = false, lpStart = null;
+const showBoxInfo = b => { if (b && b.title) toast(b.title); };
+document.addEventListener("pointerdown", e => {
+  const b = e.target.closest(".box");
+  lpFired = false; clearTimeout(lpTimer);
+  if (!b) return;
+  lpStart = [e.clientX, e.clientY];
+  lpTimer = setTimeout(() => { lpFired = true; showBoxInfo(b); }, 450);
+});
+document.addEventListener("pointermove", e => {
+  if (lpStart && Math.hypot(e.clientX - lpStart[0], e.clientY - lpStart[1]) > 10) clearTimeout(lpTimer);
+});
+["pointerup", "pointercancel"].forEach(t => document.addEventListener(t, () => { clearTimeout(lpTimer); lpStart = null; }));
+document.addEventListener("contextmenu", e => { if (e.target.closest(".box")) e.preventDefault(); });
+document.addEventListener("click", e => {
+  const box = e.target.closest(".box");
+  if (box && lpFired) { lpFired = false; e.preventDefault(); return; }
+  if (box && !canWrite) { showBoxInfo(box); return; }
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+  const a = el.dataset.action;
+  if (gmOnly.has(a) && !canWrite) return;
+  actions[a] && actions[a](el, e);
+});
+document.addEventListener("keydown", e => {
+  if (!$("modal").hidden) { if (e.key === "Escape") closeModal(false); return; }
+  if (!canWrite || e.ctrlKey || e.metaKey || e.altKey) return;
+  const tag = (document.activeElement && document.activeElement.tagName) || "";
+  if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
+  const k = e.key.toLowerCase();
+  if (k === "arrowright" || k === "n" || k === "т") { e.preventDefault(); actions.advance(); }
+  else if (k === "arrowleft") { e.preventDefault(); actions.back(); }
+  else if (k === "r" || k === "к") { e.preventDefault(); actions.rest(); }
+});
+let notesTimer = null;
+$("notes").addEventListener("input", e => {
+  if (!canWrite) return;
+  clearTimeout(notesTimer);
+  const val = e.target.value.slice(0, 20000);
+  notesTimer = setTimeout(() => { state.notes = val; commit(); }, 700);
+});
+$("notes").addEventListener("blur", () => { if (notesTimer) { clearTimeout(notesTimer); notesTimer = null; if (canWrite && state.notes !== $("notes").value) { state.notes = $("notes").value.slice(0, 20000); commit(); } } });
+
+/* ---------------- Boot ---------------- */
+function goLocal() {
+  if (mode !== "conn") return;
+  mode = "local"; canWrite = true; state = loadLocal(); render();
+}
+async function boot() {
+  render();
+  const use = window.claude && typeof window.claude.use === "function" ? window.claude.use : null;
+  if (!use) { goLocal(); return; }
+  let dbNs = null, user = null;
+  try { [dbNs, user] = await Promise.all([use("db"), use("user").catch(() => null)]); } catch { dbNs = null; }
+  if (!dbNs) { goLocal(); return; }
+  db = dbNs; docRef = db.doc(DOC_PATH); mode = "shared";
+  let w = null;
+  try { w = user && typeof user.can === "function" ? await user.can("data.write") : null; } catch { w = null; }
+  canWrite = w !== false;  // null = not told: keep controls; a refused write switches to view-only
+  connState = "conn";
+  loadTimer = setTimeout(() => { connState = "off"; if (mode === "shared") render(); }, 10000);
+  let first = true;
+  docRef.onSnapshot(snap => {
+    if (!snap.metadata.fromCache) { clearTimeout(loadTimer); connState = "sync"; }
+    if (snap.metadata.hasPendingWrites || writing || dirty) { renderStatus(); return; }
+    const d = snap.exists ? snap.data() : null;
+    const next = sanitize(d ? clone(d) : null);
+    if (!first && next.turn !== state.turn) viewDay = null;
+    first = false; loaded = true;
+    state = next;
+    render();
+  }, err => {
+    clearTimeout(loadTimer);
+    connState = "off";
+    if (err && err.code === "revoked") canWrite = false;
+    render();
+  });
+  render();
+}
+/* ---------------- PWA ---------------- */
+const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+if (isStandalone()) document.documentElement.classList.add("standalone");
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+let deferredPrompt = null;
+const SHARE_SVG = '<svg class="i share" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg>';
+function renderInstall() {
+  const el = $("install"), L = T();
+  if (isStandalone() || prefs.hideInstall || !(isIOS || deferredPrompt)) { el.hidden = true; return; }
+  el.hidden = false;
+  el.innerHTML = (deferredPrompt
+    ? `<span><b>${esc(L.installBtn)}</b><br>${esc(L.installText)}</span><button class="btn primary" data-action="install" style="height:38px;font-size:15px">${esc(L.installBtn)}</button>`
+    : `<span>${esc(L.installIos).replace("SHARE", SHARE_SVG)}</span>`)
+    + `<button class="x" data-action="hideInstall" aria-label="✕">${ic("x")}</button>`;
+}
+actions.install = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  try { await deferredPrompt.userChoice; } catch {}
+  deferredPrompt = null; renderInstall();
+};
+actions.hideInstall = () => { prefs.hideInstall = true; savePrefs(); renderInstall(); };
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; renderInstall(); });
+window.addEventListener("appinstalled", () => { deferredPrompt = null; renderInstall(); });
+const _render = render;
+render = function () { _render(); renderInstall(); };
+
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloaded) return;
+    reloaded = true;
+    try { sessionStorage.setItem("osedtt.updated", "1"); } catch {}
+    location.reload();
+  });
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+try { if (sessionStorage.getItem("osedtt.updated")) { sessionStorage.removeItem("osedtt.updated"); setTimeout(() => toast(T().updated, "good"), 300); } } catch {}
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch {}
+
+boot();
+})();
+
+</script>
+</body>
+</html>

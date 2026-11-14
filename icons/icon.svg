@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#262932"/><stop offset="1" stop-color="#121317"/></radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- hourglass frame -->
+  <rect x="166" y="112" width="180" height="22" rx="8" fill="#e0913a"/>
+  <rect x="166" y="342" width="180" height="22" rx="8" fill="#e0913a"/>
+  <path d="M186 134 C186 200 238 222 238 238 C238 254 186 276 186 342 L326 342 C326 276 274 254 274 238 C274 222 326 200 326 134 Z" fill="none" stroke="#ebe6da" stroke-width="12" stroke-linejoin="round"/>
+  <!-- sand -->
+  <path d="M206 160 L306 160 C300 196 264 214 258 232 L254 232 C248 214 212 196 206 160 Z" fill="#e0913a" opacity=".55"/>
+  <path d="M256 238 L256 300" stroke="#e0913a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M200 334 C206 300 236 290 256 288 C276 290 306 300 312 334 Z" fill="#e0913a"/>
+  <!-- tracker boxes -->
+  <g transform="translate(172 384)" stroke="#ebe6da" stroke-width="4" fill="none">
+    <rect x="0" y="0" width="168" height="28" rx="3"/>
+    <path d="M28 0v28M56 0v28M84 0v28M112 0v28M140 0v28"/>
+    <rect x="2" y="2" width="82" height="24" fill="#4a4d55" stroke="none"/>
+    <path d="M7 7l14 14M21 7L7 21M35 7l14 14M49 7L35 21M63 7l14 14M77 7L63 21" stroke-width="3.5"/>
+    <rect x="86" y="2" width="24" height="24" fill="none" stroke="#e0913a" stroke-width="4"/>
+  </g>
+</svg>
